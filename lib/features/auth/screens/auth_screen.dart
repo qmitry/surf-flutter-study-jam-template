@@ -23,10 +23,60 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  // TODO(task): Implement Auth screen.
+  TextEditingController nameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    throw UnimplementedError();
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.person),
+                border: OutlineInputBorder(),
+                labelText: 'Логин',
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child: TextField(
+              obscureText: true,
+              controller: passwordController,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.lock),
+                border: OutlineInputBorder(),
+                labelText: 'Пароль',
+              ),
+            ),
+          ),
+          Container(
+            height: 70,
+            padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+            child: ElevatedButton(
+              child: const Text(
+                'ДАЛЕЕ',
+                style: TextStyle(fontSize: 18),
+              ),
+              onPressed: () async {
+                //print(nameController.text);
+                //print(passwordController.text);
+                TokenDto token = await widget.authRepository.signIn(
+                    login: nameController.text,
+                    password: passwordController.text);
+                _pushToChat(context, token);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _pushToChat(BuildContext context, TokenDto token) {
