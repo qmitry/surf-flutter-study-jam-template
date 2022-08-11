@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:surf_practice_chat_flutter/features/chat/models/chat_message_dto.dart';
+import 'package:surf_practice_chat_flutter/features/chat/models/chat_message_location_dto.dart';
 import 'package:surf_practice_chat_flutter/features/chat/models/chat_user_dto.dart';
 import 'package:surf_practice_chat_flutter/features/chat/models/chat_user_local_dto.dart';
 import 'package:surf_practice_chat_flutter/features/chat/repository/chat_repository.dart';
@@ -23,6 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _nameEditingController = TextEditingController();
 
   Iterable<ChatMessageDto> _currentMessages = [];
+  //Iterable<ChatMessageGeolocationDto> _currentMessages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +70,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
 class _ChatBody extends StatelessWidget {
   final Iterable<ChatMessageDto> messages;
+  //final Iterable<ChatMessageGeolocationDto> messages;
 
   const _ChatBody({
     required this.messages,
@@ -158,6 +161,7 @@ class _ChatAppBar extends StatelessWidget {
 
 class _ChatMessage extends StatelessWidget {
   final ChatMessageDto chatData;
+  //final ChatMessageGeolocationDto chatData;
 
   const _ChatMessage({
     required this.chatData,
@@ -168,27 +172,56 @@ class _ChatMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Material(
-      color: chatData.chatUserDto is ChatUserLocalDto ? colorScheme.primary.withOpacity(.1) : null,
+      color: chatData.chatUserDto is ChatUserLocalDto
+          ? colorScheme.primary.withOpacity(.1)
+          : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,
         ),
+        //padding: const EdgeInsets.fromLTRB(18, 18, 150, 18),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: //CrossAxisAlignment.start,
+              chatData.chatUserDto is ChatUserLocalDto
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
           children: [
             _ChatAvatar(userData: chatData.chatUserDto),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     chatData.chatUserDto.name ?? '',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
-                  Text(chatData.message ?? ''),
+                  // Text(chatData.message ?? ''),
+                  Material(
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(30.0),
+                      bottomLeft: Radius.circular(30.0),
+                      bottomRight: Radius.circular(30.0),
+                    ),
+                    elevation: 5.0,
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 20.0,
+                      ),
+                      child: Text(
+                        chatData.message ?? '',
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  //Container(width: 50, height: 50, color: chatData. Colors.black,)
                 ],
               ),
             ),

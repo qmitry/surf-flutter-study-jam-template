@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:surf_practice_chat_flutter/common/app_colors.dart';
 import 'package:surf_practice_chat_flutter/features/auth/models/token_dto.dart';
 import 'package:surf_practice_chat_flutter/features/auth/repository/auth_repository.dart';
 import 'package:surf_practice_chat_flutter/features/chat/repository/chat_repository.dart';
 import 'package:surf_practice_chat_flutter/features/chat/screens/chat_screen.dart';
+import 'package:surf_practice_chat_flutter/main.dart';
 import 'package:surf_study_jam/surf_study_jam.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:surf_practice_chat_flutter/common/globals.dart' as globals;
 
 /// Screen for authorization process.
 ///
@@ -23,8 +28,8 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +41,7 @@ class _AuthScreenState extends State<AuthScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             child: TextField(
-              controller: nameController,
+              controller: _nameController,
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.person),
                 border: OutlineInputBorder(),
@@ -48,7 +53,7 @@ class _AuthScreenState extends State<AuthScreen> {
             padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             child: TextField(
               obscureText: true,
-              controller: passwordController,
+              controller: _passwordController,
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.lock),
                 border: OutlineInputBorder(),
@@ -65,12 +70,25 @@ class _AuthScreenState extends State<AuthScreen> {
                 style: TextStyle(fontSize: 18),
               ),
               onPressed: () async {
-                //print(nameController.text);
-                //print(passwordController.text);
-                TokenDto token = await widget.authRepository.signIn(
-                    login: nameController.text,
-                    password: passwordController.text);
-                _pushToChat(context, token);
+                try {
+                  final TokenDto tokenDto = await widget.authRepository.signIn(
+                      login: _nameController.text,
+                      password: _passwordController.text);
+                  setToken(tokenDto.token);
+                  TokenDto gottenTokenDto = TokenDto(token: await getToken());
+                  _pushToChat(context, gottenTokenDto);
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    elevation: 0,
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.transparent,
+                    content: AwesomeSnackbarContent(
+                      title: 'Ошибка!',
+                      message: 'Неверное имя пользователя или пароль',
+                      contentType: ContentType.failure,
+                    ),
+                  ));
+                }
               },
             ),
           ),
@@ -87,10 +105,21 @@ class _AuthScreenState extends State<AuthScreen> {
           return ChatScreen(
             chatRepository: ChatRepository(
               StudyJamClient().getAuthorizedClient(token.token),
+              //globals.client.getAuthorizedClient(token.token),
             ),
           );
         },
       ),
     );
+  }
+
+  static Future<String> getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') ?? '';
+  }
+
+  static Future<bool> setToken(String value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString('token', value);
   }
 }
