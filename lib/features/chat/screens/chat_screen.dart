@@ -4,6 +4,7 @@ import 'package:surf_practice_chat_flutter/features/chat/models/chat_message_loc
 import 'package:surf_practice_chat_flutter/features/chat/models/chat_user_dto.dart';
 import 'package:surf_practice_chat_flutter/features/chat/models/chat_user_local_dto.dart';
 import 'package:surf_practice_chat_flutter/features/chat/repository/chat_repository.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 
 /// Main screen of chat app, containing messages.
 class ChatScreen extends StatefulWidget {
@@ -29,6 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    _onUpdatePressed();
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -193,9 +195,27 @@ class _ChatMessage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    chatData.chatUserDto.name ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Text(
+                        chatData.chatUserDto.name ?? '',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(width: 4),
+                      chatData is ChatMessageGeolocationDto
+                          ? IconButton(
+                              onPressed: () => MapsLauncher.launchCoordinates(
+                                  (chatData as ChatMessageGeolocationDto)
+                                      .location
+                                      .latitude,
+                                  (chatData as ChatMessageGeolocationDto)
+                                      .location
+                                      .longitude),
+                              icon: const Icon(Icons.language_rounded),
+                              //color: colorScheme.onSurface,
+                            )
+                          : SizedBox(),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   // Text(chatData.message ?? ''),
@@ -221,7 +241,6 @@ class _ChatMessage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  //Container(width: 50, height: 50, color: chatData. Colors.black,)
                 ],
               ),
             ),

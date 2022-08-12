@@ -11,10 +11,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  surf_study_jam: ^0.1.0
+  surf_study_jam: ^0.2.0
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.0.15
   awesome_snackbar_content: ^0.0.8
+  maps_launcher: ^2.0.1
 
 dev_dependencies:
   flutter_test:

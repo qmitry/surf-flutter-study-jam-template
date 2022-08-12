@@ -11,14 +11,13 @@ import 'common/globals.dart' as globals;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // globals.token = await getToken();
-  // if (globals.token != '') {
-  //   print('tut');
-  //   globals.client = globals.client.getAuthorizedClient(globals.token);
-  //   // try {
-  //   //   globals.userData = globals.client.getUser();
-  //   // } on Object catch (e) {}
-  // }
+  globals.token = await getToken();
+  if (globals.token != '') {
+    globals.client = globals.client.getAuthorizedClient(globals.token);
+    // try {
+    //   globals.userData = globals.client.getUser();
+    // } on Object catch (e) {}
+  }
 
   runApp(const MyApp());
 }
@@ -27,7 +26,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   /// Constructor for [MyApp].
   const MyApp({Key? key}) : super(key: key);
-  final token = '4';
+  //final token = '4';
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +35,16 @@ class MyApp extends StatelessWidget {
         colorScheme:
             ColorScheme.fromSwatch().copyWith(primary: AppColors.primaryColor),
       ),
-      // home: (token != '')
-      //     ? ChatScreen(
-      //         chatRepository: ChatRepository(
-      //           //StudyJamClient().getAuthorizedClient(token.token),
-      //           globals.client,
-      //         ),
-      //       )
-      //     : AuthScreen(authRepository: AuthRepository(globals.client)),
+      home: (globals.token != '')
+          ? ChatScreen(
+              chatRepository: ChatRepository(
+                //StudyJamClient().getAuthorizedClient(token.token),
+                globals.client,
+              ),
+            )
+          : AuthScreen(authRepository: AuthRepository(globals.client)),
       //home: AuthScreen(authRepository: AuthRepository(globals.client)),
-      home: AuthScreen(authRepository: AuthRepository(StudyJamClient())),
+      //home: AuthScreen(authRepository: AuthRepository(StudyJamClient())),
     );
   }
 }
