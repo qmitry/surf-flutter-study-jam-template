@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:surf_practice_chat_flutter/common/app_colors.dart';
 import 'package:surf_practice_chat_flutter/features/chat/models/chat_message_dto.dart';
 import 'package:surf_practice_chat_flutter/features/chat/models/chat_message_location_dto.dart';
 import 'package:surf_practice_chat_flutter/features/chat/models/chat_user_dto.dart';
@@ -25,15 +26,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final _nameEditingController = TextEditingController();
 
   Iterable<ChatMessageDto> _currentMessages = [];
-  //Iterable<ChatMessageGeolocationDto> _currentMessages = [];
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     _onUpdatePressed();
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: AppColors.chatBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(48),
         child: _ChatAppBar(
@@ -72,7 +71,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
 class _ChatBody extends StatelessWidget {
   final Iterable<ChatMessageDto> messages;
-  //final Iterable<ChatMessageGeolocationDto> messages;
 
   const _ChatBody({
     required this.messages,
@@ -148,22 +146,22 @@ class _ChatAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          IconButton(
-            onPressed: onUpdatePressed,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-    );
+        backgroundColor: AppColors.appBarColor,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+              onPressed: onUpdatePressed,
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
+        automaticallyImplyLeading: false);
   }
 }
 
 class _ChatMessage extends StatelessWidget {
   final ChatMessageDto chatData;
-  //final ChatMessageGeolocationDto chatData;
 
   const _ChatMessage({
     required this.chatData,
@@ -182,12 +180,10 @@ class _ChatMessage extends StatelessWidget {
           horizontal: 18,
           vertical: 18,
         ),
-        //padding: const EdgeInsets.fromLTRB(18, 18, 150, 18),
         child: Row(
-          mainAxisAlignment: //CrossAxisAlignment.start,
-              chatData.chatUserDto is ChatUserLocalDto
-                  ? MainAxisAlignment.end
-                  : MainAxisAlignment.start,
+          mainAxisAlignment: chatData.chatUserDto is ChatUserLocalDto
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           children: [
             _ChatAvatar(userData: chatData.chatUserDto),
             const SizedBox(width: 16),
@@ -212,13 +208,11 @@ class _ChatMessage extends StatelessWidget {
                                       .location
                                       .longitude),
                               icon: const Icon(Icons.language_rounded),
-                              //color: colorScheme.onSurface,
                             )
-                          : SizedBox(),
+                          : const SizedBox(),
                     ],
                   ),
                   const SizedBox(height: 4),
-                  // Text(chatData.message ?? ''),
                   Material(
                     borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(30.0),

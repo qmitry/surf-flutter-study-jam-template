@@ -4,11 +4,13 @@ import 'package:surf_practice_chat_flutter/features/auth/models/token_dto.dart';
 import 'package:surf_practice_chat_flutter/features/auth/repository/auth_repository.dart';
 import 'package:surf_practice_chat_flutter/features/chat/repository/chat_repository.dart';
 import 'package:surf_practice_chat_flutter/features/chat/screens/chat_screen.dart';
-import 'package:surf_practice_chat_flutter/main.dart';
+import 'package:surf_practice_chat_flutter/features/topics/repository/chart_topics_repository.dart';
+import 'package:surf_practice_chat_flutter/features/topics/screens/topics_screen.dart';
 import 'package:surf_study_jam/surf_study_jam.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:surf_practice_chat_flutter/common/globals.dart' as globals;
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 
 /// Screen for authorization process.
 ///
@@ -70,18 +72,25 @@ class _AuthScreenState extends State<AuthScreen> {
                 style: TextStyle(fontSize: 18),
               ),
               onPressed: () async {
+                Loader.show(context,
+                    progressIndicator: const CircularProgressIndicator(
+                        color: AppColors.primaryColor));
+                await Future.delayed(const Duration(seconds: 1));
                 try {
                   final TokenDto tokenDto = await widget.authRepository.signIn(
                       login: _nameController.text,
                       password: _passwordController.text);
                   setToken(tokenDto.token);
                   TokenDto gottenTokenDto = TokenDto(token: await getToken());
-                  _pushToChat(context, gottenTokenDto);
+                  //_pushToChat(context, gottenTokenDto);
+                  globals.client =
+                      globals.client.getAuthorizedClient(globals.token);
+                  _pushToTopics(context, gottenTokenDto);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     elevation: 0,
                     behavior: SnackBarBehavior.floating,
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: AppColors.snackbarBackgroundColor,
                     content: AwesomeSnackbarContent(
                       title: 'Ошибка!',
                       message: 'Неверное имя пользователя или пароль',
@@ -89,6 +98,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ));
                 }
+                Loader.hide();
               },
             ),
           ),
@@ -105,7 +115,22 @@ class _AuthScreenState extends State<AuthScreen> {
           return ChatScreen(
             chatRepository: ChatRepository(
               StudyJamClient().getAuthorizedClient(token.token),
-              //globals.client.getAuthorizedClient(token.token),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _pushToTopics(BuildContext context, TokenDto token) {
+    Navigator.push<TopicsScreen>(
+      context,
+      MaterialPageRoute(
+        builder: (_) {
+          return TopicsScreen(
+            chatTopicsRepository: ChatTopicsRepository(
+              //StudyJamClient().getAuthorizedClient(token.token),
+              globals.client,
             ),
           );
         },
@@ -119,6 +144,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   static Future<bool> setToken(String value) async {
+    globals.token = value;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString('token', value);
   }
