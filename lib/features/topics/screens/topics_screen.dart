@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:surf_practice_chat_flutter/common/app_colors.dart';
+import 'package:surf_practice_chat_flutter/features/auth/repository/auth_repository.dart';
+import 'package:surf_practice_chat_flutter/features/auth/screens/auth_screen.dart';
 import 'package:surf_practice_chat_flutter/features/chat/repository/chat_repository.dart';
 import 'package:surf_practice_chat_flutter/features/chat/screens/chat_screen.dart';
 import 'package:surf_practice_chat_flutter/features/topics/models/chat_topic_dto.dart';
@@ -22,20 +24,44 @@ class TopicsScreen extends StatefulWidget {
 class _TopicsScreenState extends State<TopicsScreen> {
   Iterable<ChatTopicDto> _currentTopics = [];
   String myName = '';
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
 
+  @override
+  void initState() {
     _updateTopics();
     _updateName();
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: AppColors.chatBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(48),
         child: AppBar(
           title: Text(myName),
           backgroundColor: AppColors.appBarColor,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.push<ChatScreen>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) {
+                      return AuthScreen(
+                        authRepository: AuthRepository(globals.client),
+                      );
+                    },
+                  ),
+                );
+                globals.client.logout();
+              },
+            )
+          ],
         ),
       ),
       body: Column(

@@ -28,9 +28,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Iterable<ChatMessageDto> _currentMessages = [];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // TODO: implement initState
     _onUpdatePressed();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.chatBackgroundColor,
       appBar: PreferredSize(
@@ -146,17 +150,17 @@ class _ChatAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-        backgroundColor: AppColors.appBarColor,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              onPressed: onUpdatePressed,
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
-        ),
-        automaticallyImplyLeading: false);
+      backgroundColor: AppColors.appBarColor,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          IconButton(
+            onPressed: onUpdatePressed,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+    );
   }
 }
 
