@@ -21,7 +21,7 @@ class TopicsScreen extends StatefulWidget {
 
 class _TopicsScreenState extends State<TopicsScreen> {
   Iterable<ChatTopicDto> _currentTopics = [];
-  String myName = 'temp';
+  String myName = '';
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
